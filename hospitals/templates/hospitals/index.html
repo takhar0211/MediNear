@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MediCare</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #9adcd1;
+            font-family: Arial, sans-serif;
+            padding: 10px;
+        }
+
+        .outer-box {
+            background: white;
+            padding: clamp(15px, 3vw, 25px);
+            border-radius: 25px;
+            width: 90%;
+            max-width: 480px;
+        }
+
+        .inner-box {
+            background: #0a6f75;
+            width: 100%;
+            aspect-ratio: 3/2;      /* keeps height proportional */
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .icon {
+            width: clamp(70px, 20vw, 120px);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: white;
+            color: #0a6f75;
+            border: none;
+            padding: clamp(10px, 2.5vw, 12px) clamp(25px, 5vw, 40px);
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: clamp(12px, 3vw, 16px);
+            transition: transform 0.1s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Tablet and above */
+        @media (min-width: 768px) {
+            .outer-box {
+                max-width: 520px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="outer-box">
+        <div class="inner-box">
+
+            <img class="icon" src="{% static 'hospitals/images/heart.png' %}">
+
+            <button class="btn" onclick="getLocation()">
+                FIND NEARBY HOSPITALS
+            </button>
+
+        </div>
+    </div>
+
+<script>
+function getLocation() {
+    if (!navigator.geolocation) {
+        alert("Location not supported");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        const res = await fetch("/api/nearby/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ latitude: lat, longitude: lng })
+        });
+
+        const data = await res.json();
+        localStorage.setItem("hospitals", JSON.stringify(data.hospitals));
+
+        window.location.href = "/result/";
+    });
+}
+</script>
+
+</body>
+</html>
