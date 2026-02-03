@@ -10,6 +10,7 @@
         body {
             margin: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -29,7 +30,8 @@
         .inner-box {
             background: #0a6f75;
             width: 100%;
-            aspect-ratio: 3/2;      /* keeps height proportional */
+            aspect-ratio: 3/2;
+            /* keeps height proportional */
             border-radius: 25px;
             display: flex;
             flex-direction: column;
@@ -41,7 +43,7 @@
         }
 
         .icon {
-            width: clamp(70px, 20vw, 120px);
+            width: clamp(90px, 22vw, 180px);
             margin-bottom: 20px;
         }
 
@@ -67,48 +69,57 @@
                 max-width: 520px;
             }
         }
-
     </style>
 </head>
 
 <body>
-
+    <div style="text-align:center; margin-bottom:25px;">
+        <h2 style="color:#0a6f75; margin-bottom:8px;">
+            Find Hospitals Near You
+        </h2>
+    
+        <p style="color:#0a6f75; max-width:320px; margin:auto;">
+            Get instant access to nearby hospitals based on your current location.
+        </p>
+    </div>
+    
     <div class="outer-box">
         <div class="inner-box">
-
+    
             <img class="icon" src="{% static 'hospitals/images/heart.png' %}">
-
+    
             <button class="btn" onclick="getLocation()">
                 FIND NEARBY HOSPITALS
             </button>
-
+    
         </div>
     </div>
 
-<script>
-function getLocation() {
-    if (!navigator.geolocation) {
-        alert("Location not supported");
-        return;
-    }
+    <script>
+        function getLocation() {
+            if (!navigator.geolocation) {
+                alert("Location not supported");
+                return;
+            }
 
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
 
-        const res = await fetch("/api/nearby/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ latitude: lat, longitude: lng })
-        });
+                const res = await fetch("/api/nearby/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ latitude: lat, longitude: lng })
+                });
 
-        const data = await res.json();
-        localStorage.setItem("hospitals", JSON.stringify(data.hospitals));
+                const data = await res.json();
+                localStorage.setItem("hospitals", JSON.stringify(data.hospitals));
 
-        window.location.href = "/result/";
-    });
-}
-</script>
+                window.location.href = "/result/";
+            });
+        }
+    </script>
 
 </body>
+
 </html>
